@@ -2,6 +2,8 @@ from alpha_shape import alpha_shape
 from math import hypot
 from PIL import Image
 import noise
+import random
+from noise.perlin import SimplexNoise
 
 class Layer(object):
     def translate(self, x, y):
@@ -24,9 +26,9 @@ class Layer(object):
         return Normalize(self, lo, hi, new_lo, new_hi)
     def filter_points(self, points, lo, hi):
         return [(x, y) for x, y in points if lo <= self.get(x, y) < hi]
-    def alpha_shape(self, points, lo, hi, alpha):
+    def alpha_shape(self, points, lo, hi, alpha, method):
         points = self.filter_points(points, lo, hi)
-        return alpha_shape(points, alpha)
+        return alpha_shape(points, alpha, method)
     def save(self, path, x1, y1, x2, y2, lo=0, hi=1):
         data = []
         for y in range(y1, y2):
@@ -36,7 +38,7 @@ class Layer(object):
                 v = min(v, 255)
                 v = max(v, 0)
                 data.append(chr(v))
-        im = Image.frombytes('L', (x2 - x1, y2 - y1), ''.join(data))
+        im = Image.frombytes('L', (x2 - x1, y2 - y1), ''.join(data).encode())
         im.save(path, 'png')
 
 class Constant(Layer):
@@ -46,10 +48,17 @@ class Constant(Layer):
         return self.value
 
 class Noise(Layer):
-    def __init__(self, octaves=1):
+    def __init__(self, octaves=1, algo="simplex"):
         self.octaves = octaves
+        self.algo = algo
     def get(self, x, y):
-        return noise.snoise2(x, y, self.octaves)
+        if self.algo == "simplex":
+            out = noise.snoise2(x, y, self.octaves)
+        if self.algo == "snoise":
+            out = SimplexNoise(period=self.octaves, randint_function=random.randint).noise2(x, y)
+        if self.algo == "pnoise":
+            out = noise.pnoise2(x, y, self.octaves, self.octaves)
+        return out
 
 class Translate(Layer):
     def __init__(self, layer, x, y):
