@@ -18,8 +18,7 @@ def normalize(values, new_lo, new_hi):
     hi = max(values)
     for x in values:
         p = (x - lo) / (hi - lo)
-        x = new_lo + p * (new_hi - new_lo)
-        result.append(x)
+        result.append(new_lo + p * (new_hi - new_lo))
     return result
 
 def evenly_spaced(points, spacing):
@@ -52,9 +51,9 @@ def xkcdify(shape, spacing, intensity):
     if isinstance(shape, MultiPolygon):
         return MultiPolygon([xkcdify(child, spacing, intensity)
             for child in shape.geoms])
-    elif isinstance(shape, Polygon):
+    if isinstance(shape, Polygon):
         return Polygon(perturbed(shape.exterior.coords, spacing, intensity))
-    elif isinstance(shape, LineString):
+    if isinstance(shape, LineString):
         return LineString(perturbed(shape.coords, spacing, intensity))
-    else:
-        raise Exception('unsupported shape')
+    msg = 'unsupported shape'
+    raise Exception(msg)

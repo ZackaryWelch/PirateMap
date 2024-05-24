@@ -29,9 +29,9 @@ class Layer:
         return Normalize(self, lo, hi, new_lo, new_hi)
     def filter_points(self, points, lo, hi):
         return [(x, y) for x, y in points if lo <= self.get(x, y) < hi]
-    def alpha_shape(self, points, lo, hi, alpha, method):
+    def alpha_shape(self, points, lo, hi, random_alpha, method):
         points = self.filter_points(points, lo, hi)
-        return alpha_shape(points, alpha, method)
+        return alpha_shape(points, random_alpha, method)
     def save(self, path, x1, y1, x2, y2, lo=0, hi=1):
         data = []
         for y in range(y1, y2):
@@ -122,8 +122,7 @@ class Clamp(Layer):
     def get(self, x, y):
         v = self.layer.get(x, y)
         v = min(v, self.hi)
-        v = max(v, self.lo)
-        return v
+        return max(v, self.lo)
 
 class Normalize(Layer):
     def __init__(self, layer, lo, hi, new_lo, new_hi):
@@ -135,8 +134,7 @@ class Normalize(Layer):
     def get(self, x, y):
         v = self.layer.get(x, y)
         p = (v - self.lo) / (self.hi - self.lo)
-        v = self.new_lo + p * (self.new_hi - self.new_lo)
-        return v
+        return self.new_lo + p * (self.new_hi - self.new_lo)
 
 class Distance(Layer):
     def __init__(self, x, y, maximum):

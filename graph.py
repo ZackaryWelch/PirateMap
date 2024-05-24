@@ -13,12 +13,13 @@ def shortest_path(graph, start, end):
     while queue:
         (cost, v, path) = heapq.heappop(queue)
         if v not in seen:
-            path = path + [v]
+            path = [*path, v]
             seen.add(v)
             if v == end:
                 return path
             for (neighbor, c) in graph[v].items():
                 heapq.heappush(queue, (cost + c, neighbor, path))
+    return None
 
 def make_graph(points, threshold, layer=None):
     graph = {}

@@ -1,7 +1,7 @@
 import math
 import random
 
-import cairocffi as cairo
+import cairo
 from colour import Color
 from shapely.geometry import MultiPolygon, Point, Polygon
 
@@ -16,8 +16,7 @@ def make_layer(algo):
     x = layers.Noise(8, algo).add(layers.Constant(0.6)).clamp()
     x = x.translate(random.random() * 1000, random.random() * 1000)
     x = x.scale(0.005, 0.005)
-    x = x.subtract(layers.Distance(256, 256, 256))
-    return x
+    return x.subtract(layers.Distance(256, 256, 256))
 
 def color_scale(begin, end):
     step = tuple([float(end[i] - begin[i]) / WATER_GRADIENT for i in range(3)])
@@ -103,6 +102,7 @@ def find_path(layer, points, threshold, algo):
         path = graph.shortest_path(g, end, start)
         if path:
             return path
+    return None
 
 def render(algo = "simplex", method = "pyhull"):
     width = height = 512
@@ -114,11 +114,18 @@ def render(algo = "simplex", method = "pyhull"):
     dc.set_line_join(cairo.LINE_JOIN_ROUND)
     dc.scale(scale, scale)
     layer = make_layer(algo)
-    #layer.save('layer-' + algo + '.png', 0, 0, width, height)
+    layer.save('layer-' + algo + '.png', 0, 0, width, height)
     points = poisson_disc(0, 0, width, height, 8, 16)
-    shape1 = layer.alpha_shape(points, 0.1, 1, 0.1, method).buffer(-4).buffer(4)
-    shape2 = layer.alpha_shape(points, 0.3, 1, 0.1, method).buffer(-8).buffer(4)
-    shape3 = layer.alpha_shape(points, 0.12, 0.28, 0.1, method).buffer(-12).buffer(4)
+    DEFAULT_ALPHA = 40
+    ALPHA_RANGE = 10
+    random_alpha=True
+    if random_alpha:
+        alpha = random.gauss(DEFAULT_ALPHA, ALPHA_RANGE)
+    else:
+        alpha = DEFAULT_ALPHA
+    shape1 = layer.alpha_shape(points, 0.1, 1, alpha, method=method).buffer(-4).buffer(4)
+    shape2 = layer.alpha_shape(points, 0.3, 1, alpha, method=method).buffer(-8).buffer(4)
+    shape3 = layer.alpha_shape(points, 0.12, 0.28, alpha, method=method).buffer(-12).buffer(4)
     points = [x for x in points
         if shape1.contains(Point(*x)) and layer.get(*x) >= 0.25]
     path = find_path(layer, points, 16, algo)

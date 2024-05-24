@@ -37,7 +37,7 @@ def poisson_disc(x1, y1, x2, y2, r, n):
     grid.insert(x, y)
     while active:
         ax, ay = random.choice(active)
-        for i in range(n):
+        for _i in range(n):
             a = random.random() * 2 * pi
             d = random.random() * r + r
             x = ax + cos(a) * d
