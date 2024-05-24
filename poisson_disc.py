@@ -1,7 +1,8 @@
-from math import pi, sin, cos, hypot, floor
 import random
+from math import cos, floor, hypot, pi, sin
 
-class Grid(object):
+
+class Grid:
     def __init__(self, r):
         self.r = r
         self.size = r / 2 ** 0.5

@@ -1,6 +1,8 @@
-from shapely.geometry import LineString, Polygon, MultiPolygon
 import math
 import random
+
+from shapely.geometry import LineString, MultiPolygon, Polygon
+
 
 def low_pass(values, alpha):
     result = []

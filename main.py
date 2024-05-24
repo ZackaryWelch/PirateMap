@@ -1,13 +1,14 @@
-import graph
-import layers
 import math
 import random
 
-from colour import Color
-from poisson_disc import poisson_disc
-from shapely.geometry import Polygon, MultiPolygon, Point
-from xkcd import xkcdify
 import cairocffi as cairo
+from colour import Color
+from shapely.geometry import MultiPolygon, Point, Polygon
+
+import graph
+import layers
+from poisson_disc import poisson_disc
+from xkcd import xkcdify
 
 WATER_GRADIENT = 5
 
@@ -19,7 +20,7 @@ def make_layer(algo):
     return x
 
 def color_scale(begin, end):
-    step = tuple([float(end[i] - begin[i]) / WATER_GRADIENT for i in range(0, 3)])
+    step = tuple([float(end[i] - begin[i]) / WATER_GRADIENT for i in range(3)])
 
     def mul(step, value):
         return tuple([v * value for v in step])
@@ -27,7 +28,7 @@ def color_scale(begin, end):
     def add_v(step, step2):
         return tuple([v + step2[i] for i, v in enumerate(step)])
 
-    return [add_v(begin, mul(step, r)) for r in range(0, WATER_GRADIENT)]
+    return [add_v(begin, mul(step, r)) for r in range(WATER_GRADIENT)]
 
 
 def render_shape(dc, shape):

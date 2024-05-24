@@ -1,7 +1,9 @@
 from math import hypot, sqrt
+
 from pyhull.delaunay import DelaunayTri
 from shapely.geometry import MultiLineString
 from shapely.ops import cascaded_union, polygonize
+
 
 def alpha_shape(points, alpha):
     def add_edge(points, i, j):

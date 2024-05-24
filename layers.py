@@ -1,11 +1,14 @@
-from alpha_shape import alpha_shape
-from math import hypot
-from PIL import Image
-import noise
 import random
-from noise.perlin import SimplexNoise
+from math import hypot
 
-class Layer(object):
+import noise
+from noise.perlin import SimplexNoise
+from PIL import Image
+
+from alpha_shape import alpha_shape
+
+
+class Layer:
     def translate(self, x, y):
         return Translate(self, x, y)
     def scale(self, x, y):

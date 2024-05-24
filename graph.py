@@ -1,5 +1,6 @@
-from math import hypot
 import heapq
+from math import hypot
+
 
 def distance(a, b):
     x1, y1 = a
